@@ -34,6 +34,7 @@ def main():
     for msg_index in range(recevied_num , msg_num):
         # In rare cases, SMS content loading is delayed
         sleep(0.3)
+        msg_content = os.popen("mmcli -m 0 -s %d --output-json" %(msg_index)).read()
         msg_content=json.loads(msg_content)
         number=msg_content["sms"]["content"]["number"]
         content=msg_content["sms"]["content"]["text"]
