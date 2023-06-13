@@ -5,6 +5,8 @@ from datetime import datetime
 import json
 import config
 import forward
+import threading
+
 msg_num = 0
 recevied_num=0
 
@@ -32,29 +34,32 @@ def main():
     for msg_index in range(recevied_num , msg_num):
         # In rare cases, SMS content loading is delayed
         sleep(0.3)
-        msg_content = os.popen("mmcli -m 0 -s %d --output-json" %(msg_index)).read()
-        #save
-        if(config.save_messages):
-            with open(config.save_messages_path,"a") as f:
-                f.write(msg_content+"\n")
         msg_content=json.loads(msg_content)
         number=msg_content["sms"]["content"]["number"]
         content=msg_content["sms"]["content"]["text"]
         timestamp=datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+
+        # save message
+        if(config.save_messages):
+            msg_save_content=json.dumps({"number":number,"content":content,"timestamp":timestamp})
+            with open(config.save_messages_path,"a") as f:
+                f.write(msg_save_content+"\n")
+
         logging.info("Recevied a new message Number: %s Content: %s Timestamp: %s" %(number,content,timestamp))
 
         # forward part
         for _, func in forward.__dict__.items():
             if callable(func) and func.__name__.startswith('forward_to_'):
-                func(number, content, timestamp)
+                thread = threading.Thread(target=func, args=(number, content, timestamp))
+                thread.start()
 
         # update the received_num
         recevied_num=msg_num
 
 if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s [%(levelname)s] %(message)s',level=logging.INFO)
-
     logging.info("SMS Forwarder started")
+    logging.info("https://github.com/ryltech/sms_forwarder")
 
     while True:
         main()
