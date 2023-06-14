@@ -71,6 +71,7 @@ def forward_to_foo(number,content,timestamp):
 ***
 ### 常见问题
 1. Q:收到的短信包含乱码
+
 A:将系统语言修改成使用utf-8的
 ***
 ### 免责声明
