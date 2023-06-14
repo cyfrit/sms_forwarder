@@ -22,10 +22,7 @@ mmcli -m 0
 ```
 sudo apt update && sudo apt install python3
 ```
-2. clone或下载本仓库
-```
-git clone https://github.com/ryltech/sms_forwarder
-```
+2. clone或从releases下载
 3. 修改config.example.py中的配置，并重命名为config.py
 4. 运行
 ```
